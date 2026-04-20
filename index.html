@@ -59,6 +59,15 @@
   </style>
 </head>
 <body>
+  <div id="loginBox" style="max-width:420px;margin:20px auto;padding:16px;border:1px solid #ccc;border-radius:12px;background:#fff">
+  <h3>Đăng nhập</h3>
+  <input id="loginEmail" type="email" placeholder="Email" style="width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-radius:8px;">
+  <input id="loginPassword" type="password" placeholder="Mật khẩu" style="width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-radius:8px;">
+  <button id="loginBtn" style="width:100%;padding:10px;border:none;border-radius:8px;background:#111827;color:#fff;font-weight:700;cursor:pointer;">
+    Đăng nhập
+  </button>
+  <div id="loginMsg" style="margin-top:10px;font-size:14px;color:#c00;"></div>
+</div>
 <div class="app stack">
   <div class="brand">
     <div class="between" style="align-items:flex-start">
@@ -452,6 +461,32 @@ renderAll();
   const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
   window.supabase = supabase
+  const loginBtn = document.getElementById('loginBtn')
+
+if (loginBtn) {
+  loginBtn.addEventListener('click', async () => {
+    const email = document.getElementById('loginEmail').value.trim()
+    const password = document.getElementById('loginPassword').value.trim()
+    const msg = document.getElementById('loginMsg')
+
+    msg.style.color = '#c00'
+    msg.textContent = 'Đang đăng nhập...'
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    })
+
+    if (error) {
+      msg.textContent = 'Đăng nhập lỗi: ' + error.message
+      return
+    }
+
+    msg.style.color = 'green'
+    msg.textContent = 'Đăng nhập thành công: ' + (data.user?.email || '')
+    console.log('Login OK', data.user)
+  })
+}
 </script>
 </body>
 
