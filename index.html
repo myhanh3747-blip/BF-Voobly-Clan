@@ -444,4 +444,14 @@ document.querySelectorAll('.subtab-btn').forEach(btn=>btn.onclick=()=>{
 renderAll();
 </script>
 </body>
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+  const supabaseUrl = https://brxzxlznxoxphglenrpy.supabase.co
+  const supabaseAnonKey = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyeHp4bHpueG94cGhnbGVucnB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2ODk1OTQsImV4cCI6MjA5MjI2NTU5NH0.ZjjQDcpC23ZnhMirw6XF0s35SSRMRjFbXkLgZamyNqI
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+  window.supabase = supabase
+</script>
 </html>
