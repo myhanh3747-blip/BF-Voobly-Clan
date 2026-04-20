@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Clan BF Việt Nam - Mobile v2</title>
+  <style>
+    :root{
+      --bg:#eef2f7; --card:#fff; --text:#0f172a; --muted:#64748b; --line:#dbe4ee;
+      --primary:#111827; --green:#dcfce7; --green-text:#166534; --yellow:#fef3c7;
+      --shadow:0 12px 24px rgba(15,23,42,.08);
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#f8fafc,#eef2f7);color:var(--text)}
+    .app{max-width:460px;margin:0 auto;padding:12px 12px 92px}
+    .card{background:var(--card);border:1px solid rgba(219,228,238,.92);border-radius:24px;box-shadow:var(--shadow)}
+    .section{padding:14px}
+    .stack{display:flex;flex-direction:column;gap:12px}
+    .between{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .title{font-size:24px;font-weight:900}
+    .panel{font-size:18px;font-weight:900}
+    .sub{font-size:13px;color:var(--muted)}
+    .badge{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;border:1px solid var(--line);font-size:11px;font-weight:800;background:#fff}
+    .badge.dark{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .badge.gray{background:#f8fafc}
+    .badge.green{background:#ecfdf5;color:#166534;border-color:#bbf7d0}
+    .brand{background:linear-gradient(135deg,#0f172a,#1f2937);color:#fff;border-radius:24px;padding:16px;box-shadow:0 12px 24px rgba(15,23,42,.2)}
+    .brand .sub{color:#cbd5e1}
+    .mode-grid,.footer-nav{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .mode-grid{margin-top:12px;background:rgba(255,255,255,.12);padding:8px;border-radius:18px}
+    .mode-btn,.nav-btn,.tab-btn,.subtab-btn,.primary-btn,.secondary-btn,.danger-btn{border:none;border-radius:16px;cursor:pointer;font-weight:800}
+    .mode-btn,.nav-btn{padding:12px 10px;background:#f8fafc;color:#334155}
+    .mode-btn.active,.nav-btn.active,.tab-btn.active,.subtab-btn.active,.primary-btn{background:var(--primary);color:#fff}
+    .tab-btn,.subtab-btn,.secondary-btn,.danger-btn,.primary-btn{padding:11px 12px}
+    .tab-btn,.subtab-btn,.secondary-btn{background:#f8fafc;border:1px solid var(--line);color:#334155}
+    .danger-btn{background:#fee2e2;color:#991b1b}
+    .input,.textarea,.select{width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--line);outline:none;background:#fff;font-size:14px}
+    .textarea{min-height:96px;resize:vertical}
+    .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .subtabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tab-pane,.subpane{display:none}
+    .tab-pane.active,.subpane.active{display:block}
+    .team-card,.match-card,.request-card,.member-card{border:1px solid var(--line);border-radius:18px;padding:12px;background:#fff}
+    .meta{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .meta .box{background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:10px}
+    .label{font-size:11px;color:#64748b;margin-bottom:4px}
+    .money.plus{color:#15803d;font-weight:900}
+    .money.minus{color:#dc2626;font-weight:900}
+    .note{border:1px dashed #cbd5e1;background:#f8fafc;color:#475569;border-radius:16px;padding:12px;font-size:13px}
+    .slider-box{background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:10px;margin-top:8px}
+    .slider-top{display:flex;justify-content:space-between;font-size:11px;color:#64748b;margin-bottom:8px}
+    input[type=range]{width:100%}
+    .match-grid{display:grid;grid-template-columns:42px 1fr auto;gap:8px;align-items:center}
+    .team-pair{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+    .team-cell{padding:10px 8px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:13px;font-weight:800;text-align:center}
+    .team-win{background:var(--green);color:var(--green-text)}
+    .hidden{display:none !important}
+    .footer-wrap{position:fixed;left:50%;transform:translateX(-50%);bottom:10px;z-index:20;width:min(440px,calc(100% - 16px));background:rgba(255,255,255,.94);border:1px solid rgba(219,228,238,.95);box-shadow:0 10px 22px rgba(15,23,42,.12);border-radius:20px;padding:8px;backdrop-filter:blur(10px)}
+  </style>
+</head>
+<body>
+<div class="app stack">
+  <div class="brand">
+    <div class="between" style="align-items:flex-start">
+      <div>
+        <div class="title">Clan BF Việt Nam</div>
+        <div class="sub">Mobile prototype v2</div>
+      </div>
+      <span id="roleBadge" class="badge dark">Admin</span>
+    </div>
+    <div class="mode-grid">
+      <button id="btnModeTournament" class="mode-btn active">🏆 Giải đấu</button>
+      <button id="btnModeRating" class="mode-btn">👥 Chấm rate</button>
+    </div>
+  </div>
+
+  <div id="ratingPage" class="stack hidden">
+    <div class="card">
+      <div class="section stack">
+        <div class="between">
+          <div>
+            <div class="panel">Chấm rate</div>
+            <div class="sub">Bản điện thoại</div>
+          </div>
+          <label class="sub"><input type="checkbox" id="roleToggle" checked> <span id="roleText">Admin</span></label>
+        </div>
+        <input id="searchInput" class="input" placeholder="Tìm thành viên...">
+        <button class="secondary-btn">⬆ Upload file chấm rate</button>
+        <button class="secondary-btn">📄 Upload file member</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section stack">
+        <div class="panel">Thêm người chơi</div>
+        <input id="newName" class="input" placeholder="Tên người chơi">
+        <input id="newR1" class="input" placeholder="Rate 1">
+        <input id="newR2" class="input" placeholder="Rate 2">
+        <input id="newR3" class="input" placeholder="Rate 3">
+        <input id="newR4" class="input" placeholder="Rate 4">
+        <button id="addMemberBtn" class="primary-btn">＋ Thêm người chơi</button>
+      </div>
+    </div>
+
+    <div id="memberList" class="stack"></div>
+  </div>
+
+  <div id="tournamentPage" class="stack">
+    <div class="card">
+      <div class="section stack">
+        <div class="between">
+          <div>
+            <div class="panel">Chọn giải đấu</div>
+            <div class="sub">Mặc định giải gần nhất</div>
+          </div>
+          <label class="sub"><input type="checkbox" id="roleToggle2" checked> <span id="roleText2">Admin</span></label>
+        </div>
+        <select id="tournamentSelect" class="select"></select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section stack">
+        <div class="between" style="align-items:flex-start">
+          <div>
+            <div id="tourTitle" class="panel"></div>
+            <div class="sub">Giải đã kết thúc sẽ khóa chỉnh sửa</div>
+          </div>
+          <div class="stack" style="align-items:flex-end;gap:8px">
+            <span id="tourStatusBadge" class="badge gray"></span>
+            <span id="lockBadge" class="badge gray hidden">🔒 Khóa</span>
+          </div>
+        </div>
+        <button id="endTournamentBtn" class="secondary-btn">Kết thúc giải</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="team-info">Đội</button>
+      <button class="tab-btn" data-tab="standings">BXH</button>
+      <button class="tab-btn" data-tab="matches">Lịch</button>
+      <button class="tab-btn" data-tab="schedule">Hẹn giờ</button>
+      <button class="tab-btn" data-tab="sponsor">Tài trợ</button>
+    </div>
+
+    <div id="team-info" class="tab-pane active stack">
+      <div class="card">
+        <div class="section stack">
+          <div class="panel">Thêm / sửa đội</div>
+          <input id="teamName" class="input" placeholder="Tên đội">
+          <input id="teamCaptain" class="input" placeholder="Đội trưởng">
+          <input id="teamMembers" class="input" placeholder="Thành viên, ngăn cách dấu phẩy">
+          <input id="teamDeposit" class="input" placeholder="Phí gối đầu">
+          <input id="teamRemaining" class="input" placeholder="Số tiền còn lại">
+          <textarea id="teamNotes" class="textarea" placeholder="Ghi chú"></textarea>
+          <button id="addTeamBtn" class="primary-btn">＋ Thêm đội</button>
+        </div>
+      </div>
+      <div id="teamList" class="stack"></div>
+    </div>
+
+    <div id="standings" class="tab-pane stack"></div>
+    <div id="matches" class="tab-pane stack"></div>
+
+    <div id="schedule" class="tab-pane stack">
+      <div class="card">
+        <div class="section">
+          <div class="panel">Yêu cầu dời lịch</div>
+          <div class="sub">Chỉ hiện đội yêu cầu, mức phạt, lý do, trạng thái</div>
+        </div>
+      </div>
+      <div id="requestList" class="stack"></div>
+    </div>
+
+    <div id="sponsor" class="tab-pane stack">
+      <div class="card">
+        <div class="section stack">
+          <div class="panel">Tài trợ</div>
+          <div class="sub">Nhập theo k, hiển thị đầy đủ VNĐ</div>
+          <div class="subtabs">
+            <button class="subtab-btn active" data-subtab="funders">Nhà tài trợ</button>
+            <button class="subtab-btn" data-subtab="cashflow">Thu chi</button>
+          </div>
+          <div id="funders" class="subpane active stack">
+            <div id="fundersCarry" class="note"></div>
+            <div id="fundersList" class="stack"></div>
+          </div>
+          <div id="cashflow" class="subpane stack">
+            <div id="cashflowCarry" class="note"></div>
+            <div id="cashflowList" class="stack"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-wrap">
+  <div class="footer-nav">
+    <button id="navTournament" class="nav-btn active">🏆 Giải đấu</button>
+    <button id="navRating" class="nav-btn">👥 Chấm rate</button>
+  </div>
+</div>
+
+<script>
+const RATE_MIN=1500, RATE_MAX=2000, RATE_THRESHOLD=100;
+let isAdmin=true, mode='tournament';
+let members=[
+  {id:1,name:"Maria_DT",rates:[1780,1800,1770,1790]},
+  {id:2,name:"nemesislx",rates:[1850,1830,1860,1840]},
+  {id:3,name:"Keieru",rates:[1710,1700,1690,1720]},
+  {id:4,name:"DuyBF",rates:[1600,1620,null,null]}
+];
+let tournaments=[
+  {id:2,name:"Giải Clan BF 2024",year:2024,status:"ended",teams:[{id:201,teamName:"Old Team 1",captain:"Captain A",members:["Captain A","Old B"],deposit:500,remaining:0,notes:"Giải đã kết thúc"}],groups:[],rescheduleRequests:[],sponsors:{carryFunders:1500,carryCashflow:1200,funders:[{name:"Nhà tài trợ cũ",amountK:800}],cashflow:[{content:"Chi giải cũ",type:"Chi",amountK:300}]}}
+,
+  {id:3,name:"Giải Clan BF 2025",year:2025,status:"active",
+   teams:[
+     {id:101,teamName:"BaoNam",captain:"BaoNam",members:["BaoNam","H1","H2","H3"],deposit:500,remaining:420,notes:"- Trừ 80k do dời lịch trận 1"},
+     {id:102,teamName:"PY_Chip",captain:"PY_Chip",members:["PY_Chip","P1","P2","P3"],deposit:500,remaining:500,notes:"Chưa phát sinh"}
+   ],
+   groups:[{id:"A",size:4,rankings:[
+     {team:"GiaLucHaoNam",played:3,won:2,lost:1,gameWon:4,gameLost:3,diff:1,points:2},
+     {team:"Orion_Shy",played:3,won:2,lost:1,gameWon:4,gameLost:4,diff:0,points:2},
+     {team:"BaoNam",played:3,won:1,lost:2,gameWon:4,gameLost:4,diff:0,points:1},
+     {team:"PY_Chip",played:3,won:1,lost:2,gameWon:3,gameLost:4,diff:-1,points:1}
+   ],matches:[
+     {id:1,no:1,teamA:"BaoNam",teamB:"PY_Chip",score:"2-0",time:"19:30",status:"done"},
+     {id:2,no:2,teamA:"BaoNam",teamB:"Orion_Shy",score:"1-2",time:"20:15",status:"done"},
+     {id:3,no:3,teamA:"BaoNam",teamB:"GiaLucHaoNam",score:"1-2",time:"19:30",status:"done"},
+     {id:4,no:4,teamA:"PY_Chip",teamB:"Orion_Shy",score:"1-2",time:"20:15",status:"done"},
+     {id:5,no:5,teamA:"PY_Chip",teamB:"GiaLucHaoNam",score:"2-0",time:"19:30",status:"done"},
+     {id:6,no:6,teamA:"Orion_Shy",teamB:"GiaLucHaoNam",score:"0-2",time:"20:15",status:"done"}
+   ]}],
+   rescheduleRequests:[{id:9001,requestedTeam:"BaoNam",penaltyK:80,reason:"Xin dời sang tối Chủ nhật",status:"Chờ admin"}],
+   sponsors:{carryFunders:2300,carryCashflow:900,funders:[{name:"Sponsor A",amountK:1000}],cashflow:[{content:"Chi giải thưởng",type:"Chi",amountK:700}]}
+  }
+];
+let selectedTournamentId=[...tournaments].sort((a,b)=>b.year-a.year)[0].id;
+
+function asNumber(v){ if(v===null||v===undefined||v==="") return null; if(typeof v==="number") return Number.isNaN(v)?null:v; const s=String(v).trim().replace(/\s+/g,''); if(!s) return null; const n=Number(s.replace(',','.')); return Number.isNaN(n)?null:n; }
+function calcRate(rates){ const nums=rates.map(asNumber).filter(v=>v!==null); if(nums.length<4) return {status:"ít thông tin",value:null}; if(nums.some(v=>v<RATE_MIN||v>RATE_MAX)) return {status:"không hợp lệ",value:null}; const sorted=[...nums].sort((a,b)=>a-b); const mid=Math.floor(sorted.length/2); const median=sorted.length%2?sorted[mid]:(sorted[mid-1]+sorted[mid])/2; const kept=nums.filter(v=>Math.abs(v-median)<=RATE_THRESHOLD); const base=kept.length?kept:[median]; return {status:"hợp lệ",value:Math.round(base.reduce((a,b)=>a+b,0)/base.length)}; }
+function formatVNDfromK(k){ return ((Number(k)||0)*1000).toLocaleString('vi-VN')+' VNĐ'; }
+function getTour(){ return tournaments.find(t=>t.id===selectedTournamentId)||tournaments[0]; }
+function readonly(){ return getTour().status==='ended'; }
+function parseScore(score){ if(!score) return null; const nums=String(score).match(/\d+/g); if(!nums||nums.length<2) return null; return [parseInt(nums[0],10),parseInt(nums[1],10)]; }
+
+function renderRole(){
+  document.getElementById('roleBadge').textContent=isAdmin?'Admin':'User';
+  document.getElementById('roleBadge').className='badge '+(isAdmin?'dark':'gray');
+  document.getElementById('roleText').textContent=isAdmin?'Admin':'User';
+  document.getElementById('roleText2').textContent=isAdmin?'Admin':'User';
+  document.getElementById('roleToggle').checked=isAdmin;
+  document.getElementById('roleToggle2').checked=isAdmin;
+}
+function renderMode(){
+  const rating=mode==='rating';
+  document.getElementById('ratingPage').classList.toggle('hidden',!rating);
+  document.getElementById('tournamentPage').classList.toggle('hidden',rating);
+  document.getElementById('btnModeTournament').classList.toggle('active',!rating);
+  document.getElementById('btnModeRating').classList.toggle('active',rating);
+  document.getElementById('navTournament').classList.toggle('active',!rating);
+  document.getElementById('navRating').classList.toggle('active',rating);
+}
+function renderTournamentSelect(){
+  const ordered=[...tournaments].sort((a,b)=>b.year-a.year);
+  const sel=document.getElementById('tournamentSelect');
+  sel.innerHTML=ordered.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+  sel.value=String(selectedTournamentId);
+}
+function renderHeader(){
+  const t=getTour();
+  document.getElementById('tourTitle').textContent=t.name;
+  const badge=document.getElementById('tourStatusBadge');
+  badge.textContent=readonly()?'Chỉ xem':'Có thể chỉnh';
+  badge.className='badge '+(readonly()?'gray':'dark');
+  document.getElementById('lockBadge').classList.toggle('hidden',!readonly());
+  document.getElementById('endTournamentBtn').classList.toggle('hidden',!isAdmin||readonly());
+}
+function renderMembers(){
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  const list=q?members.filter(m=>m.name.toLowerCase().includes(q)):members;
+  const wrap=document.getElementById('memberList');
+  wrap.innerHTML='';
+  list.forEach(m=>{
+    const result=calcRate(m.rates);
+    const color=result.status==='hợp lệ'?'#166534':result.status==='ít thông tin'?'#a16207':'#b91c1c';
+    const card=document.createElement('div');
+    card.className='member-card';
+    card.innerHTML=`
+      <div class="between">
+        <div><div class="panel" style="font-size:17px">${m.name}</div><div class="sub">Rate tổng hợp: <b>${result.value??'—'}</b></div></div>
+        <div style="font-weight:900;color:${color}">${result.status}</div>
+      </div>
+      ${m.rates.map((r,idx)=>`
+        <div class="stack" style="margin-top:10px">
+          <input class="input" ${isAdmin?'':'disabled'} value="${r??''}" data-member="${m.id}" data-idx="${idx}" placeholder="Rate ${idx+1}">
+          <div class="slider-box">
+            <div class="slider-top"><span>Chọn nhanh</span><span>${r??'trống'}</span></div>
+            <input type="range" min="${RATE_MIN}" max="${RATE_MAX}" step="1" value="${r??RATE_MIN}" ${isAdmin?'':'disabled'} data-slider-member="${m.id}" data-idx="${idx}">
+          </div>
+        </div>`).join('')}
+      ${isAdmin?`<button class="danger-btn" style="margin-top:12px" data-del-member="${m.id}">Xóa người chơi</button>`:''}
+    `;
+    wrap.appendChild(card);
+  });
+  document.querySelectorAll('[data-member][data-idx]').forEach(el=>el.oninput=e=>{
+    const id=Number(e.target.dataset.member), idx=Number(e.target.dataset.idx);
+    members=members.map(m=>m.id===id?({...m,rates:m.rates.map((x,i)=>i===idx?asNumber(e.target.value):x)}):m); renderMembers();
+  });
+  document.querySelectorAll('[data-slider-member][data-idx]').forEach(el=>el.oninput=e=>{
+    const id=Number(e.target.dataset.sliderMember), idx=Number(e.target.dataset.idx);
+    members=members.map(m=>m.id===id?({...m,rates:m.rates.map((x,i)=>i===idx?asNumber(e.target.value):x)}):m); renderMembers();
+  });
+  document.querySelectorAll('[data-del-member]').forEach(el=>el.onclick=e=>{
+    const id=Number(e.target.dataset.delMember); members=members.filter(m=>m.id!==id); renderMembers();
+  });
+}
+function renderTeams(){
+  const t=getTour();
+  const wrap=document.getElementById('teamList'); wrap.innerHTML='';
+  t.teams.forEach(team=>{
+    const card=document.createElement('div');
+    card.className='team-card';
+    card.innerHTML=`
+      <div class="between">
+        <div><div class="panel" style="font-size:17px">${team.teamName}</div><div class="sub">Đội trưởng: ${team.captain||'Chưa có'}</div></div>
+        <div class="${team.remaining<0?'money minus':'money plus'}">${formatVNDfromK(team.remaining)}</div>
+      </div>
+      <div style="margin-top:10px"><b>Thành viên:</b> ${(team.members||[]).join(', ')}</div>
+      <div style="margin-top:8px"><b>Phí gối đầu:</b> ${formatVNDfromK(team.deposit)}</div>
+      <div style="margin-top:8px;white-space:pre-line"><b>Ghi chú:</b> ${team.notes||'Không có'}</div>
+    `;
+    wrap.appendChild(card);
+  });
+  ['teamName','teamCaptain','teamMembers','teamDeposit','teamRemaining','teamNotes','addTeamBtn'].forEach(id=>document.getElementById(id).disabled=!isAdmin||readonly());
+}
+function renderStandings(){
+  const wrap=document.getElementById('standings'); wrap.innerHTML='';
+  getTour().groups.forEach(g=>{
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML=`<div class="section stack">
+      <div class="between"><div class="panel">Bảng ${g.id}</div><span class="badge gray">${g.size} đội</span></div>
+      ${g.rankings.map(r=>`
+        <div class="team-card">
+          <div class="between"><div style="font-weight:900">${r.team}</div><span class="badge dark">${r.points} điểm</span></div>
+          <div class="meta" style="margin-top:10px">
+            <div class="box"><div class="label">Số trận</div><div>${r.played}</div></div>
+            <div class="box"><div class="label">Thắng</div><div>${r.won}</div></div>
+            <div class="box"><div class="label">Thua</div><div>${r.lost}</div></div>
+            <div class="box"><div class="label">Hiệu số</div><div>${r.diff}</div></div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+    wrap.appendChild(card);
+  });
+}
+function renderMatches(){
+  const wrap=document.getElementById('matches'); wrap.innerHTML='';
+  getTour().groups.forEach(g=>{
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML=`<div class="section stack">
+      <div class="between"><div class="panel">Lịch bảng ${g.id}</div><span class="badge gray">${g.matches.length} trận</span></div>
+      ${g.matches.map(m=>{
+        const nums=parseScore(m.score); let l='', r='';
+        if(nums){ if(nums[0]>nums[1]) l='team-win'; else if(nums[1]>nums[0]) r='team-win'; }
+        return `<div class="match-card">
+          <div class="match-grid">
+            <div style="font-weight:900;text-align:center">${m.no}</div>
+            <div class="team-pair">
+              <div class="team-cell ${l}">${m.teamA}</div>
+              <div class="team-cell ${r}">${m.teamB}</div>
+            </div>
+            <div style="font-weight:900">${m.score}</div>
+          </div>
+          <div class="between" style="margin-top:10px">
+            <div class="sub">Giờ đấu: ${m.time}</div>
+            ${isAdmin&&!readonly()?`<button class="secondary-btn" style="padding:8px 10px" onclick="alert('Demo: admin sửa trực tiếp')">Sửa</button>`:''}
+          </div>
+        </div>`}).join('')}
+    </div>`;
+    wrap.appendChild(card);
+  });
+}
+function renderRequests(){
+  const wrap=document.getElementById('requestList'); wrap.innerHTML='';
+  getTour().rescheduleRequests.forEach(r=>{
+    const card=document.createElement('div'); card.className='request-card';
+    card.innerHTML=`<div class="between"><div><div class="panel" style="font-size:17px">${r.requestedTeam}</div><div class="sub">Đội yêu cầu dời lịch</div></div><span class="badge ${r.status==='Đã duyệt'?'green':'gray'}">${r.status}</span></div>
+    <div style="margin-top:10px"><b>Mức phạt:</b> ${formatVNDfromK(r.penaltyK)}</div>
+    <div style="margin-top:8px"><b>Lý do:</b> ${r.reason}</div>
+    ${isAdmin&&!readonly()&&r.status!=='Đã duyệt'?`<button class="primary-btn" style="margin-top:12px" data-approve="${r.id}">Admin duyệt</button>`:''}`;
+    wrap.appendChild(card);
+  });
+  document.querySelectorAll('[data-approve]').forEach(el=>el.onclick=e=>{
+    const id=Number(e.target.dataset.approve);
+    tournaments=tournaments.map(t=>t.id===selectedTournamentId?({...t,rescheduleRequests:t.rescheduleRequests.map(r=>r.id===id?({...r,status:'Đã duyệt'}):r)}):t); renderRequests();
+  });
+}
+function renderSponsors(){
+  const s=getTour().sponsors||{carryFunders:0,carryCashflow:0,funders:[],cashflow:[]};
+  document.getElementById('fundersCarry').innerHTML=`<b>Tổng tồn quỹ tài trợ:</b> ${formatVNDfromK(s.carryFunders)}`;
+  document.getElementById('cashflowCarry').innerHTML=`<b>Tổng tồn quỹ thu chi:</b> ${formatVNDfromK(s.carryCashflow)}`;
+  document.getElementById('fundersList').innerHTML=s.funders.map(x=>`<div class="team-card"><div style="font-weight:900">${x.name}</div><div class="sub">Nhập: ${x.amountK}k</div><div style="margin-top:6px">${formatVNDfromK(x.amountK)}</div></div>`).join('');
+  document.getElementById('cashflowList').innerHTML=s.cashflow.map(x=>`<div class="team-card"><div style="font-weight:900">${x.content}</div><div class="sub">${x.type} · nhập ${x.amountK}k</div><div style="margin-top:6px">${formatVNDfromK(x.amountK)}</div></div>`).join('');
+}
+function renderAll(){ renderRole(); renderMode(); renderTournamentSelect(); renderHeader(); renderMembers(); renderTeams(); renderStandings(); renderMatches(); renderRequests(); renderSponsors(); }
+
+btnModeTournament.onclick=()=>{mode='tournament';renderAll();window.scrollTo({top:0,behavior:'smooth'});}
+btnModeRating.onclick=()=>{mode='rating';renderAll();window.scrollTo({top:0,behavior:'smooth'});}
+navTournament.onclick=()=>{mode='tournament';renderAll();window.scrollTo({top:0,behavior:'smooth'});}
+navRating.onclick=()=>{mode='rating';renderAll();window.scrollTo({top:0,behavior:'smooth'});}
+roleToggle.onchange=e=>{isAdmin=e.target.checked;renderAll();}
+roleToggle2.onchange=e=>{isAdmin=e.target.checked;renderAll();}
+tournamentSelect.onchange=e=>{selectedTournamentId=Number(e.target.value);renderAll();}
+searchInput.oninput=renderMembers;
+addMemberBtn.onclick=()=>{
+  const name=newName.value.trim(); if(!name) return alert('Nhập tên người chơi trước.');
+  if(members.some(m=>m.name.toLowerCase()===name.toLowerCase())) return alert('Tên đã tồn tại.');
+  members.push({id:Date.now(),name,rates:[asNumber(newR1.value),asNumber(newR2.value),asNumber(newR3.value),asNumber(newR4.value)]});
+  ['newName','newR1','newR2','newR3','newR4'].forEach(id=>document.getElementById(id).value=''); renderMembers();
+}
+addTeamBtn.onclick=()=>{
+  if(!isAdmin||readonly()) return;
+  const name=teamName.value.trim(); if(!name) return alert('Nhập tên đội trước.');
+  getTour().teams.push({id:Date.now(),teamName:name,captain:teamCaptain.value.trim(),members:teamMembers.value.split(',').map(x=>x.trim()).filter(Boolean),deposit:Number(asNumber(teamDeposit.value)||0),remaining:Number(asNumber(teamRemaining.value)||0),notes:teamNotes.value});
+  ['teamName','teamCaptain','teamMembers','teamDeposit','teamRemaining','teamNotes'].forEach(id=>document.getElementById(id).value=''); renderTeams();
+}
+endTournamentBtn.onclick=()=>{
+  if(!isAdmin||readonly()) return;
+  if(!confirm('Đánh dấu giải này đã kết thúc?')) return;
+  tournaments=tournaments.map(t=>t.id===selectedTournamentId?({...t,status:'ended'}):t); renderAll();
+}
+document.querySelectorAll('.tab-btn').forEach(btn=>btn.onclick=()=>{
+  document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active'); document.getElementById(btn.dataset.tab).classList.add('active');
+});
+document.querySelectorAll('.subtab-btn').forEach(btn=>btn.onclick=()=>{
+  document.querySelectorAll('.subtab-btn').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.subpane').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active'); document.getElementById(btn.dataset.subtab).classList.add('active');
+});
+renderAll();
+</script>
+</body>
+</html>
